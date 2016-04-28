@@ -31,34 +31,39 @@ ex2Tests = [ testF1 "countColors test" countColors
 -- Exercise 3 -----------------------------------------
 
 ex3Tests :: [Test]
-ex3Tests = []
--- ex3Tests = [ testF2 "getMove test" getMove
---              [ ([Red, Blue, Yellow, Orange], [Red, Orange, Orange, Blue],
---                Move [Red, Orange, Orange, Blue] 1 2)
---              ]
---            ]
+ex3Tests = [ testF2 "getMove test" getMove
+             [ ([Red, Blue, Yellow, Orange], [Red, Orange, Orange, Blue],
+               Move [Red, Orange, Orange, Blue] 1 2)
+             ]
+           ]
 
 -- Exercise 4 -----------------------------------------
 
 ex4Tests :: [Test]
-ex4Tests = []
--- ex4Tests = [ testF2 "isConsistent test" isConsistent
---              [ (Move [Red, Red, Blue, Green] 1 1, [Red, Blue, Yellow, Purple],
---                True)
---              , (Move [Red, Red, Blue, Green] 1 1, [Red, Blue, Red, Purple],
---                False)
---              ]
---            ]
+ex4Tests = [ testF2 "isConsistent test" isConsistent
+             [ (Move [Red, Red, Blue, Green] 1 1, [Red, Blue, Yellow, Purple],
+               True)
+             , (Move [Red, Red, Blue, Green] 1 1, [Red, Blue, Red, Purple],
+               False)
+             ]
+           ]
 
 -- Exercise 5 -----------------------------------------
 
 ex5Tests :: [Test]
-ex5Tests = []
+ex5Tests = [ testF2 "filterCodes test" filterCodes
+              [ (Move [Red, Red, Blue, Green] 1 1, 
+                [[Red, Blue, Yellow, Purple], [Red, Blue, Red, Purple]],
+                [[Red, Blue, Yellow, Purple]])
+              ]
+           ]
 
 -- Exercise 6 -----------------------------------------
 
 ex6Tests :: [Test]
-ex6Tests = []
+ex6Tests = [ testF1 "allCodes test" allCodes
+              [(1, [[Red], [Green], [Blue], [Yellow], [Orange], [Purple]])]
+           ]
 
 -- Exercise 7 -----------------------------------------
 

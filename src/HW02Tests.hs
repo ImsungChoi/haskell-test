@@ -6,7 +6,7 @@ module HW02Tests where
 
 import HW02
 import Testing
-
+import Data.List
 
 -- Exercise 1 -----------------------------------------
 
@@ -71,6 +71,11 @@ ex7Tests :: [Test]
 ex7Tests = []
 
 -- Bonus ----------------------------------------------
+
+-- testFiveGuess :: Code -> Bool
+-- testFiveGuess c = length (fiveGuess c) <= 6
+
+-- testAllCases = and (map (testFiveGuess) (allCodes 4)) 
 
 bonusTests :: [Test]
 bonusTests = []

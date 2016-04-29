@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 module HW02 where
 
--- import Data.List
+import Data.List
 
 -- Mastermind -----------------------------------------
 
@@ -75,7 +75,7 @@ isConsistent (Move s a b) c = a == a' && b == b'
 -- Exercise 5 -----------------------------------------
 
 filterCodes :: Move -> [Code] -> [Code]
-filterCodes m x = filter (\c-> isConsistent m c) x
+filterCodes m = filter (isConsistent m)
 
 -- Exercise 6 -----------------------------------------
 
@@ -102,4 +102,51 @@ solveHelper x y
 -- Bonus ----------------------------------------------
 
 fiveGuess :: Code -> [Move]
-fiveGuess = undefined
+fiveGuess x = solveHelper' x (allCodes 4) [Red, Red, Green, Green]
+
+solveHelper' :: Code -> [Code] -> Code -> [Move]
+solveHelper' x y g
+    | length y == 1 = [move]
+    | otherwise     = move : solveHelper' x filtered (guess filtered)
+        where move = getMove x g
+              filtered = filterCodes move y
+            
+guess :: [Code] -> Code
+guess x = guessHelper x (getHits x) 
+    where guessHelper :: [Code] -> [Int] -> Code
+          guessHelper x y = fst (minimumBy (\c1 c2 -> compare (snd c1) (snd c2)) (zip x y))
+
+possible :: [(Int, Int)]
+possible = [(0, 0), (0, 1), (0, 2), (0, 3), 
+            (0, 4), (1, 0), (1, 1), (1, 2), 
+            (1, 3), (2, 0), (2, 1), (2, 2), 
+            (3, 0), (3, 1), (4, 0)
+           ];
+
+getHits :: [Code] -> [Int]
+getHits xs = map (\x -> hitHelper x xs) xs
+    where hitHelper :: Code -> [Code] -> Int
+          hitHelper x ys = max (map (\i -> match i getMove x )
+              
+            map (\p -> (getMove x y)) possible
+              
+            length (filter (\y -> match (getMove x y)) ys)
+
+getMoves :: Code -> [Code] -> [Move]
+getMove x ys = map (\y -> getMove y x) ys
+
+calMax :: [Move] -> Int
+calMax ms = max (Map (\p -> calPossible p ms) possible)
+    where calPossible :: (Int, Int) -> [Move] -> Int
+          calPossible (a, b) (m:ms)
+            | a == a' && b == b'    = 1
+
+getHit :: Code -> Code -> Int
+getHit x y = (getMove x y)
+    where return :: Move -> (Int, Int)
+          return (Move _ a b) = (a , b)
+          
+match :: (Int, Int) -> Move -> Bool
+match (a, b) (Move x y _) 
+    | a == x && b == y  = True
+    | otherwise         = False 

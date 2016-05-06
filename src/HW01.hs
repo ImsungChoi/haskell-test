@@ -21,7 +21,7 @@ toRevDigits x
 -- Double every first number in a list starting on the right.
 doubleEveryFirst :: [Integer] -> [Integer]
 doubleEveryFirst []         = []
-doubleEveryFirst (x:[])     = [x]
+doubleEveryFirst [x]     = [x]
 doubleEveryFirst (x:(y:zs)) = x*2 : y : doubleEveryFirst zs 
 
 -- Double every second number in a list starting on the left.
@@ -36,8 +36,7 @@ sumDigit x = sum (toRevDigits x)
 
 -- Calculate the sum of all the digits in every Integer.
 sumDigits :: [Integer] -> Integer
-sumDigits []        = 0
-sumDigits (x:xs)    = sumDigit x + sumDigits xs 
+sumDigits = foldr ((+) . sumDigit) 0 
 
 -- Exercise 5 -----------------------------------------
 

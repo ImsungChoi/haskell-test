@@ -1,4 +1,4 @@
-import HW02Tests
+import HW03Tests
 import Testing
 
 main :: IO ()

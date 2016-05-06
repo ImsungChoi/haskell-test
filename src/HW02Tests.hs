@@ -90,5 +90,4 @@ allTests = concat [ ex1Tests
                   , ex5Tests
                   , ex6Tests
                   , ex7Tests
-                  , bonusTests
-                  ]
+                  , bonusTests]

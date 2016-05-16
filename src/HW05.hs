@@ -5,26 +5,40 @@ module HW05 where
 import Data.ByteString.Lazy (ByteString)
 import Data.Map.Strict (Map)
 import System.Environment (getArgs)
+import Data.Word8 (Word8)
 
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map.Strict as Map
+import qualified Data.Bits as Bits
+
+import qualified Data.ByteString.Lazy.Char8 as C
+
 
 import Parser
 
 -- Exercise 1 -----------------------------------------
 
 getSecret :: FilePath -> FilePath -> IO ByteString
-getSecret = undefined
+getSecret f1 f2 = do
+  rf1 <- BS.readFile f1
+  rf2 <- BS.readFile f2
+  return (BS.filter (/=0) (BS.pack $ BS.zipWith (Bits.xor) rf1 rf2))
 
 -- Exercise 2 -----------------------------------------
 
 decryptWithKey :: ByteString -> FilePath -> IO ()
-decryptWithKey = undefined
+decryptWithKey k f = do
+  rf <- BS.readFile $ f ++ ".enc"
+  BS.writeFile f $ BS.pack $ go k rf
+    where go :: ByteString -> ByteString -> [Word8]
+          go k' b = zipWith (Bits.xor) (cycle $ BS.unpack k') (BS.unpack b)
 
--- Exercise 3 -----------------------------------------
+-- Exercise 3 ----------------------------------------- 
 
 parseFile :: FromJSON a => FilePath -> IO (Maybe a)
-parseFile = undefined
+parseFile f = do
+  rf <- BS.readFile f
+  return $ decode rf
 
 -- Exercise 4 -----------------------------------------
 

@@ -43,17 +43,38 @@ parseFile f = do
 -- Exercise 4 -----------------------------------------
 
 getBadTs :: FilePath -> FilePath -> IO (Maybe [Transaction])
-getBadTs = undefined
+getBadTs vp tp = do
+  mvs <- parseFile vp :: IO (Maybe [TId])
+  mts <- parseFile tp
+  case mvs of 
+    Nothing -> return mts
+    Just vs -> do
+      case mts of
+        Nothing -> return Nothing
+        Just ts -> return $ Just $ filter(\t -> elem (tid t) vs) ts
+
 
 -- Exercise 5 -----------------------------------------
 
 getFlow :: [Transaction] -> Map String Integer
-getFlow = undefined
+getFlow ts = go Map.empty ts
+  where go :: Map String Integer -> [Transaction] -> Map String Integer
+        go m []       = m
+        go m (t:ts')  = let mv = Map.lookup (to t) m 
+                        in case mv of
+                          Nothing -> go (Map.insert (to t) (amount t) m) ts'
+                          Just v  -> let f _ = Just (v + (amount t))
+                                     in go (Map.update f (to t) m) ts'
 
 -- Exercise 6 -----------------------------------------
 
 getCriminal :: Map String Integer -> String
-getCriminal = undefined
+getCriminal m = go (Map.elemAt 0 m) (tail (Map.toList m))
+  where go :: (String, Integer) -> [(String, Integer)] -> String
+        go c []     = fst c
+        go c (p:ps) = if (snd c) < (snd p) 
+                      then go p ps
+                      else go c ps
 
 -- Exercise 7 -----------------------------------------
 
@@ -63,7 +84,8 @@ undoTs = undefined
 -- Exercise 8 -----------------------------------------
 
 writeJSON :: ToJSON a => FilePath -> a -> IO ()
-writeJSON = undefined
+writeJSON fp ts = do
+  BS.writeFile fp $ encode ts
 
 -- Exercise 9 -----------------------------------------
 

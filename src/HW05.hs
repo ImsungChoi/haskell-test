@@ -49,12 +49,15 @@ getBadTs :: FilePath -> FilePath -> IO (Maybe [Transaction])
 getBadTs vp tp = do
   mvs <- parseFile vp :: IO (Maybe [TId])
   mts <- parseFile tp
-  case mvs of 
-    Nothing -> return mts
-    Just vs -> do
-      case mts of
-        Nothing -> return Nothing
-        Just ts -> return $ Just $ filter(\t -> elem (tid t) vs) ts
+  case (mvs, mts) of
+    (Just vs, Just ts) -> return $ Just $ filter(\ t -> elem (tid t) vs) ts
+    (_, _) -> return Nothing
+  -- case mvs of 
+  --   Nothing -> return mts
+  --   Just vs -> do
+  --     case mts of
+  --       Nothing -> return Nothing
+  --       Just ts -> return $ Just $ filter(\t -> elem (tid t) vs) ts
 
 test :: IO (Map String Integer)
 test = do 
@@ -82,11 +85,11 @@ getCriminal m = fst $ maximumBy (comparing $ snd) (Map.toList m)
 -- Exercise 7 -----------------------------------------
 
 undoTs :: Map String Integer -> [TId] -> [Transaction]
-undoTs m ts = makeT ts (reverse $ sort' $ payers m) (sort' $ payees m)  
+undoTs m ts = makeT ts (payers m) (payees m)  
   where payers :: Map String Integer -> [(String, Integer)]
-        payers m' = filter (\ x -> (snd x) > 0) (Map.toList m')
+        payers m' = reverse $ sort' $ filter (\ x -> (snd x) > 0) (Map.toList m')
         payees :: Map String Integer -> [(String, Integer)]
-        payees m'' = filter (\ x -> (snd x) < 0) (Map.toList m'')
+        payees m'' = sort' $ filter (\ x -> (snd x) < 0) (Map.toList m'')
         sort' :: [(String, Integer)] -> [(String, Integer)]
         sort' ls = sortBy (comparing $ snd) ls
         makeT :: [TId] -> [(String, Integer)] -> [(String, Integer)] -> [Transaction]

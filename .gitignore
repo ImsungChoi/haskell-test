@@ -5,6 +5,7 @@
 *.hp
 *.svg
 *.ps
+*.aux
 *~
 *_flymake.hs
 .hsenv

@@ -2,6 +2,7 @@
 module HW02 where
 
 import Data.List
+import Data.Ord
 
 -- Mastermind -----------------------------------------
 
@@ -34,19 +35,6 @@ exactMatches :: Code -> Code -> Int
 exactMatches x y =  length (filter id (zipWith (==) x y))
 
 -- Exercise 2 -----------------------------------------
-
--- For each peg in xs, count how many times is occurs in ys
--- countColors :: Code -> [Int]  
--- countColors pegs = go colors pegs
---     where go :: Code -> Code -> [Int]
---           go [] _         = []
---           go (c:cs) y     = countColor c y : go cs y
-
--- countColor :: Peg -> Code -> Int
--- countColor _ []     = 0
--- countColor x (y:ys)
---         | x == y    = 1 + countColor x ys
---         | otherwise = countColor x ys
 
 countColors :: Code -> [Int]
 countColors pegs = map (`count` pegs) colors
@@ -85,13 +73,12 @@ allCodes x = go x [[Red], [Green], [Blue], [Yellow], [Orange], [Purple]]
           go 1 acc = acc
           go i acc = go (i-1) (concatMap addCode acc)
           addCode :: Code -> [Code]
-          addCode c = [Red : c] ++ [Green : c] ++ [Blue : c] ++
-                      [Yellow : c] ++ [Orange : c] ++ [Purple : c]
+          addCode c = [nc : c | nc <- colors]
 
 -- Exercise 7 -----------------------------------------
 
 solve :: Code -> [Move]
-solve x = if last s == (last $ init s)
+solve x = if last s == last (init s)
           then init s
           else s
     where s = solveHelper x (allCodes 4)
@@ -106,46 +93,41 @@ solveHelper x y
 -- Bonus ----------------------------------------------
 
 fiveGuess :: Code -> [Move]
-fiveGuess x = if last s == (last $ init s)
+fiveGuess x = if last s == last (init s)
               then init s
               else s
-    where s = solveHelper' [Red, Red, Green, Green] (allCodes 4)
+    where s = solveHelper' x (allCodes 4) [Red, Red, Green, Green]
 
-solveHelper' :: Code -> [Code] -> [Move]
-solveHelper' x y
+solveHelper' :: Code -> [Code] -> Code -> [Move]
+solveHelper' x y g
     | length y == 1 = [move]
-    | otherwise     = move : solveHelper' gd filtered
-        where move      = getMove x gd
+    | otherwise     = move : solveHelper' x filtered (guess filtered)
+        where move      = getMove x g
               filtered  = filterCodes move y
-              gd        = guess filtered
             
 guess :: [Code] -> Code
 guess x = guessHelper x (getHits x) 
     where guessHelper :: [Code] -> [Int] -> Code
-          guessHelper x y = fst (minimumBy (\c1 c2 -> compare (snd c1) (snd c2)) (zip x y))
+          guessHelper xs hs = fst (minimumBy (comparing snd) (zip xs hs))
 
 possible :: [(Int, Int)]
-possible = [(0, 0), (0, 1), (0, 2), (0, 3), 
-            (0, 4), (1, 0), (1, 1), (1, 2), 
-            (1, 3), (2, 0), (2, 1), (2, 2), 
-            (3, 0), (3, 1), (4, 0)
-           ];
+possible = [(x, y) | x <- [0..4], y <- [0..4], x + y <= 4]
 
 getHits :: [Code] -> [Int]
-getHits xs = map (\x -> hitHelper x xs) xs
+getHits xs = map (`hitHelper` xs) xs
     where hitHelper :: Code -> [Code] -> Int
           hitHelper a b = calMax $ getMoves a b
 
 getMoves :: Code -> [Code] -> [Move]
-getMoves x ys = map (\y -> getMove y x) ys
+getMoves x = map (`getMove` x)
 
 calMax :: [Move] -> Int
-calMax ms = maximum (map (\p -> calPossible p ms) possible)
+calMax ms = maximum (map (`calPossible` ms) possible)
     where calPossible :: (Int, Int) -> [Move] -> Int
           calPossible p (m:ms')
-            | length ms' == 0   = 0
-            | match p m         = 1 + calPossible p ms'
-            | otherwise         = calPossible p ms'
+            | null ms'  = 0
+            | match p m = 1 + calPossible p ms'
+            | otherwise = calPossible p ms'
 
 -- getHit :: Code -> Code -> Int
 -- getHit x y = (getMove x y)
@@ -156,3 +138,6 @@ match :: (Int, Int) -> Move -> Bool
 match (a, b) (Move _ x y) 
     | a == x && b == y  = True
     | otherwise         = False 
+
+testFiveGuess :: [Code] -> [Int]
+testFiveGuess = map (length . fiveGuess)

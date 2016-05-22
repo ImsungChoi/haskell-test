@@ -1,8 +1,8 @@
 module Main where
 
 import Lib
-import HW05
-import HW05Tests
+import HW06
+import HW06Tests
 import Testing
 
 main :: IO ()

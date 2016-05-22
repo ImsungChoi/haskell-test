@@ -2,6 +2,9 @@
 *.o
 *.swp
 *.tag
+*.hp
+*.svg
+*.ps
 *~
 *_flymake.hs
 .hsenv

@@ -17,7 +17,7 @@ data Transaction = Transaction { from   :: String
                                , to     :: String
                                , amount :: Integer
                                , tid    :: TId
-                               }
+                               } deriving Show
 
 instance FromJSON Transaction where
     parseJSON (Object v) = Transaction   <$>

@@ -72,13 +72,13 @@ ex7Tests = []
 
 -- Bonus ----------------------------------------------
 
--- testFiveGuess :: Code -> Bool
--- testFiveGuess c = length (fiveGuess c) <= 6
+testFiveGuess :: Code -> Bool
+testFiveGuess c = length (fiveGuess c) <= 5
 
--- testAllCases = and (map (testFiveGuess) (allCodes 4)) 
+testAllCases = and (map (testFiveGuess) (allCodes 4)) 
 
-bonusTests :: [Test]
-bonusTests = []
+-- bonusTests :: [Test]
+-- bonusTests = []
 
 -- All Tests ------------------------------------------
 
@@ -89,5 +89,5 @@ allTests = concat [ ex1Tests
                   , ex4Tests
                   , ex5Tests
                   , ex6Tests
-                  , ex7Tests
-                  , bonusTests]
+                  , ex7Tests]
+                  -- , bonusTests]

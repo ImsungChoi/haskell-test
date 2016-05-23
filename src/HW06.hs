@@ -78,14 +78,16 @@ minMaxSlow xs = Just (minimum xs, maximum xs)
 {- Total Memory in use: ??? MB -}
 minMax :: [Int] -> Maybe (Int, Int)
 minMax [] = Nothing
-minMax a = let s = (head a, head a)
-           in go s (tail a)
-    where go :: (Int, Int) -> [Int] -> Maybe (Int, Int)
-          go m []     = Just m
-          go m (x:xs) = m `seq` go (min (fst m) x, max (snd m) x) xs
+minMax a  = Just (strictMin (head a) (tail a), strictMax (head a) (tail a))
+    where strictMin :: Int -> [Int] -> Int
+          strictMin m []      = m
+          strictMin m (x:xs)  = m `seq` strictMin (min m x) xs
+          strictMax :: Int -> [Int] -> Int
+          strictMax m []      = m
+          strictMax m (x:xs)  = m `seq` strictMax (max m x) xs
 
-main' :: IO ()
-main' = print $ minMax $ sTake 1000000 $ rand 7666532
+main :: IO ()
+main = print $ minMax $ sTake 1000000 $ rand 7666532
 
 -- Exercise 10 ----------------------------------------
 

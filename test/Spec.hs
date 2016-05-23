@@ -1,10 +1,11 @@
-import HW06Tests
+
+import HW02Tests
 import Testing
 
 main :: IO ()
-main = print testResults
+main = do
+    print (testResults)
 
-
--- testResults :: [Failure]
--- -- testResults = runTests allTests
+testResults :: [Failure]
+testResults = runTests allTests
 -- testResults = []

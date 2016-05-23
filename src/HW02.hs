@@ -113,6 +113,7 @@ guess x = guessHelper x (getHits x)
 possible :: [(Int, Int)]
 possible = [(x, y) | x <- [0..4], y <- [0..4], x + y <= 4]
 
+
 getHits :: [Code] -> [Int]
 getHits xs = map (`hitHelper` xs) xs
     where hitHelper :: Code -> [Code] -> Int

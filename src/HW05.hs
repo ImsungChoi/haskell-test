@@ -14,7 +14,7 @@ import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map.Strict as Map
 import qualified Data.Bits as Bits
 
-import qualified Data.ByteString.Lazy.Char8 as C
+-- import qualified Data.ByteString.Lazy.Char8 as C
 
 
 import Parser

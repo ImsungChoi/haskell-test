@@ -2,7 +2,10 @@
 module HW06 where
 
 import Data.List
-import Data.Functor
+import Data.Functor()
+
+main :: IO ()
+main = print $ minMax $ sTake 1000000 $ rand 7666532
 
 -- Exercise 1 -----------------------------------------
 
@@ -78,16 +81,11 @@ minMaxSlow xs = Just (minimum xs, maximum xs)
 {- Total Memory in use: ??? MB -}
 minMax :: [Int] -> Maybe (Int, Int)
 minMax [] = Nothing
-minMax a  = Just (strictMin (head a) (tail a), strictMax (head a) (tail a))
-    where strictMin :: Int -> [Int] -> Int
-          strictMin m []      = m
-          strictMin m (x:xs)  = m `seq` strictMin (min m x) xs
-          strictMax :: Int -> [Int] -> Int
-          strictMax m []      = m
-          strictMax m (x:xs)  = m `seq` strictMax (max m x) xs
+minMax a  = Just (strictMinMax (head a) (head a) $ tail a)
+    where strictMinMax :: Int -> Int -> [Int] -> (Int, Int)
+          strictMinMax m1 m2 []     = (m1, m2)
+          strictMinMax m1 m2 (x:xs) = m1 `seq` m2 `seq` strictMinMax (min m1 x) (max m2 x) xs
 
-main :: IO ()
-main = print $ minMax $ sTake 1000000 $ rand 7666532
 
 -- Exercise 10 ----------------------------------------
 

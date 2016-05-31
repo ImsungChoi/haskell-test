@@ -28,6 +28,11 @@ swapV i1 i2 v = do
     v2 <- v !? i2
     return $ v // [(i1, v2), (i2, v1)]
 
+swapV' :: Int -> Int -> Vector a -> Vector a
+swapV' i1 i2 v = v // [(i1, v2), (i2, v1)]
+  where v1 = v ! i1
+        v2 = v ! i2
+        
 -- Exercise 2 -----------------------------------------
 
 mapM :: Monad m => (a -> m b) -> [a] -> m [b]
@@ -41,25 +46,41 @@ getElts as v = mapM (v !?) as
 type Rnd a = Rand StdGen a
 
 randomElt :: Vector a -> Rnd (Maybe a)
-randomElt = undefined
-
+randomElt v = (v !?) `liftM` getRandomR (0, length v - 1) 
+                 
 -- Exercise 4 -----------------------------------------
 
 randomVec :: Random a => Int -> Rnd (Vector a)
-randomVec = undefined
+randomVec n = V.fromList `liftM` replicateM n getRandom
 
 randomVecR :: Random a => Int -> (a, a) -> Rnd (Vector a)
-randomVecR = undefined
+randomVecR n t = V.fromList `liftM` replicateM n (getRandomR t)
 
 -- Exercise 5 -----------------------------------------
 
 shuffle :: Vector a -> Rnd (Vector a)
-shuffle = undefined
+shuffle v = (v //) `liftM` go v (getN $ length v)
+  where go :: Vector a -> [Int] -> Rnd ([(Int, a)])
+        go v' as = (zip' v' as) `liftM` mapM (\x -> getRandomR $ getPair x) as
+
+zip' :: Vector a -> [Int] -> [Int] -> [(Int, a)]
+zip' _ [] []          = []
+zip' _ [] (_:_)       = []
+zip' _ (_:_) []       = []
+zip' v (a:as) (b:bs)  = (a, v!b) : (b, v!a) : zip' (swapV' a b v) as bs
+   
+getPair :: Int -> (Int, Int)
+getPair n = (0, n - 1) 
+
+getN :: Int -> [Int]
+getN n = reverse [1 .. n-1];
 
 -- Exercise 6 -----------------------------------------
 
 partitionAt :: Ord a => Vector a -> Int -> (Vector a, a, Vector a)
-partitionAt = undefined
+partitionAt v p = (mfilter (pivot <) v', pivot, mfilter (pivot >=) v')
+  where pivot = v!p
+        v' = V.take p v V.++ V.drop (p+1) v
 
 -- Exercise 7 -----------------------------------------
 
@@ -70,12 +91,20 @@ quicksort (x:xs) = quicksort [ y | y <- xs, y < x ]
                    <> (x : quicksort [ y | y <- xs, y >= x ])
 
 qsort :: Ord a => Vector a -> Vector a
-qsort = undefined
+qsort v 
+  | v == V.empty = V.empty 
+  | otherwise    = qsort [y | y <- xs, y < x]
+                   <> (x `V.cons` qsort [y | y <- xs, y >= x])
+    where x = V.head v
+          xs = V.drop 1 v
 
 -- Exercise 8 -----------------------------------------
 
 qsortR :: Ord a => Vector a -> Rnd (Vector a)
-qsortR = undefined
+qsortR v
+  | v == V.empty = V.empty
+  | otherwise    = partitionAt v rp
+    where rp = getRandomR (0, length v -1) 
 
 -- Exercise 9 -----------------------------------------
 

@@ -1,8 +1,7 @@
 module Main where
 
 import Lib
-import HW02
-import HW02Tests
+import HW07
 
 import Testing
 

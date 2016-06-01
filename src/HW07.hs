@@ -41,7 +41,7 @@ mapM f as = sequence $ map f as
 getElts :: [Int] -> Vector a -> Maybe [a]
 getElts as v = mapM (v !?) as 
 
--- Exercise 3 -----------------------------------------
+-- Exercibse 3 -----------------------------------------
 
 type Rnd a = Rand StdGen a
 
@@ -73,12 +73,15 @@ getPair :: Int -> (Int, Int)
 getPair n = (0, n - 1) 
 
 getN :: Int -> [Int]
-getN n = reverse [1 .. n-1];
+getN n = reverse [1..n-1];
+
+getN' :: Int -> [Int]
+getN' n = [0..n-1];
 
 -- Exercise 6 -----------------------------------------
 
 partitionAt :: Ord a => Vector a -> Int -> (Vector a, a, Vector a)
-partitionAt v p = (mfilter (pivot <) v', pivot, mfilter (pivot >=) v')
+partitionAt v p = (mfilter (pivot >) v', pivot, mfilter (pivot <=) v')
   where pivot = v!p
         v' = V.take p v V.++ V.drop (p+1) v
 
@@ -100,35 +103,78 @@ qsort v
 
 -- Exercise 8 -----------------------------------------
 
+-- qsortR :: Ord a => Vector a -> Rnd (Vector a)
+-- qsortR v = liftM V.reverse $ qsortR' v
+
 qsortR :: Ord a => Vector a -> Rnd (Vector a)
-qsortR v
-  | v == V.empty = V.empty
-  | otherwise    = partitionAt v rp
-    where rp = getRandomR (0, length v -1) 
+qsortR v = if length v <= 1 
+           then return v
+           else do 
+                r <- getRandomR (0, length v - 1)
+                let partition = partitionAt v r
+                less <- qsortR $ get1 partition
+                more <- qsortR $ get3 partition
+                return $ combine (less, (get2 partition), more)
+    
+combine :: (Vector a, a, Vector a) -> Vector a
+combine (a, b, c) = a V.++ (b `V.cons` c)
+
+get1 :: (Vector a, a, Vector a) -> Vector a
+get1 (a, _, _) = a
+
+get2 :: (Vector a, a, Vector a) -> a
+get2 (_, b, _) = b
+
+get3 :: (Vector a, a, Vector a) -> Vector a
+get3 (_, _, c) = c
+
 
 -- Exercise 9 -----------------------------------------
 
 -- Selection
 select :: Ord a => Int -> Vector a -> Rnd (Maybe a)
-select = undefined
+select n v = if n > length v
+             then return Nothing
+             else if n == 1 && length v == 1
+                  then return $ Just $ v!0
+                  else do 
+                    r <- getRandomR (0, length v - 1)
+                    let partition = partitionAt v r
+                    let lessNum = length $ get1 partition
+                    if n == lessNum
+                    then return $ Just $ v!n
+                    else if n < lessNum
+                        then select n $ get1 partition
+                        else select (n-lessNum-1) $ get3 partition
 
 -- Exercise 10 ----------------------------------------
 
 allCards :: Deck
-allCards = undefined
+allCards = [Card x y | x <- labels, y <- suits]
 
 newDeck :: Rnd Deck
-newDeck =  undefined
+newDeck =  shuffle allCards
 
 -- Exercise 11 ----------------------------------------
 
 nextCard :: Deck -> Maybe (Card, Deck)
-nextCard = undefined
+nextCard d = if d == V.empty
+             then Nothing
+             else Just (V.head d, V.tail d) 
 
 -- Exercise 12 ----------------------------------------
 
 getCards :: Int -> Deck -> Maybe ([Card], Deck)
-getCards = undefined
+getCards n d = if n > length d 
+               then Nothing
+               else do 
+                    c <- nextCard d
+                    if n == 1
+                    then Just ([fst c], snd c)
+                    else do 
+                         nc <- getCards (n-1) (snd c)
+                         Just ((fst c) : (fst nc), snd nc)
+               
 
 -- Exercise 13 ----------------------------------------
 
